@@ -14,8 +14,7 @@
 &lt;p>The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a &lt;code>footer&lt;/code> or &lt;code>cite&lt;/code> element, and optionally with in-line changes such as annotations and abbreviations.&lt;/p>
 &lt;h4 id="blockquote-without-attribution">Blockquote without attribution&lt;/h4>
 &lt;blockquote>
-&lt;p>Tiam, ad mint andaepu dandae nostion secatur sequo quae.
-&lt;strong>Note&lt;/strong> that you can use &lt;em>Markdown syntax&lt;/em> within a blockquote.&lt;/p>
+&lt;p>Tiam, ad mint andaepu dandae nostion secatur sequo quae.&lt;strong>Note&lt;/strong> that you can use &lt;em>Markdown syntax&lt;/em> within a blockquote.&lt;/p>
 &lt;/blockquote>
 &lt;h4 id="blockquote-with-attribution">Blockquote with attribution&lt;/h4>
 &lt;blockquote>

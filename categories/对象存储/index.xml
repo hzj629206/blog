@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>对象存储 on 平凡的路</title><link>https://ogr.xyz/categories/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/</link><description>Recent content in 对象存储 on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>ogr.xyz</copyright><lastBuildDate>Thu, 14 Mar 2024 13:35:17 +0800</lastBuildDate><atom:link href="https://ogr.xyz/categories/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>Garage对象存储的安装和使用</title><link>https://ogr.xyz/p/garage%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8/</link><pubDate>Thu, 14 Mar 2024 13:35:17 +0800</pubDate><guid>https://ogr.xyz/p/garage%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>对象存储 on 平凡的路</title><link>https://ogr.xyz/categories/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/</link><description>Recent content in 对象存储 on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>ogr.xyz</copyright><lastBuildDate>Thu, 14 Mar 2024 13:35:17 +0800</lastBuildDate><atom:link href="https://ogr.xyz/categories/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>Garage对象存储的安装和使用</title><link>https://ogr.xyz/p/garage-setup/</link><pubDate>Thu, 14 Mar 2024 13:35:17 +0800</pubDate><guid>https://ogr.xyz/p/garage-setup/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
 &lt;p>前几年 Oracle Cloud 云服务推出的时候，申请了日区（ap-tokyo-1）永久免费资源。包括免费主机和共计 200GB 的块存储额度。&lt;br>
 闲来无事，整理一下：保留一台 Ubuntu Linux 实例，实例初始存储空间 50G 本地磁盘，剩余 150G 额度创建一个块存储卷通过iSCSI挂载到实例上。&lt;br>
-实例配置: 1 OCPU，1GB Mem，0.48Mbps Bandwidth，整体性能一般，当然能免费使用也没什么可说的。
-创建好实例并装好 Docker 后一直没什么实际用处，有段时间用来挂载小雅Alist看视频。&lt;/p>
+实例配置: 1 OCPU，1GB Mem，0.48Mbps Bandwidth，整体性能一般，当然能免费使用也没什么可说的。创建好实例并装好 Docker 后一直没什么实际用处，有段时间用来挂载小雅Alist看视频。&lt;/p>
 &lt;p>最近心血来潮来折腾个人博客。调查了一番之后选择用 Hugo + Markdown 生成静态博客。如何搭建静态博客暂且不表，其中涉及到图片等资源如何存储的问题。图片可以选择跟博客内容一起发布和托管，但这不符合折腾的精神。必须要搞一个图床！&lt;/p>
 &lt;p>关于图床，有一些开源自托管部署的项目，但目前以 S3 为代表的对象存储被广泛应用，非常适合用于搭建图床。各大云服务商都有推出自己的对象存储服务，有的有免费存储空间额度。但是一般免费额度都比较小，一般在 20G 以下。考虑到 Oracle 免费实例上有 150G 的存储空间，那有没有可以自己搭建的 S3 兼容的开源项目呢？&lt;/p>
 &lt;p>那必须是有的，比较流行的是 Ceph 和 Minio。Ceph 生态庞大但是比较重量级，不适合个人用户。Minio 对 S3 的兼容性最好，支持用 Docker 部署单实例使用，部署和使用都很简单。在实例上安装体验了一下，发现即使没存储内容也很容易把内存占满，所以只能放弃了。&lt;/p>
@@ -133,8 +132,7 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> dxflrs/garage:v0.9.3
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>其中 &lt;code>/mnt/iscsi&lt;/code> 是块存储卷的挂载路径，在此创建 Garage 的 &lt;code>meta&lt;/code> 和 &lt;code>data&lt;/code> 目录。为了安全起见，不映射任何公开端口，统一用域名走 Nginx HTTPS 443 端口访问。
-至此，容器就跑起来了。容器内部不包含 SHELL 程序，不能使用 &lt;code>docker exec -it garaged /bin/sh&lt;/code> 进行交互式访问。需要使用 &lt;code>docker exec garaged /garage&lt;/code>，所有的命令都可以用 &lt;code>--help&lt;/code> 自解释。&lt;br>
+&lt;/div>&lt;p>其中 &lt;code>/mnt/iscsi&lt;/code> 是块存储卷的挂载路径，在此创建 Garage 的 &lt;code>meta&lt;/code> 和 &lt;code>data&lt;/code> 目录。为了安全起见，不映射任何公开端口，统一用域名走 Nginx HTTPS 443 端口访问。至此，容器就跑起来了。容器内部不包含 SHELL 程序，不能使用 &lt;code>docker exec -it garaged /bin/sh&lt;/code> 进行交互式访问。需要使用 &lt;code>docker exec garaged /garage&lt;/code>，所有的命令都可以用 &lt;code>--help&lt;/code> 自解释。&lt;br>
 可以用 &lt;code>docker logs garaged -f&lt;/code> 查看日志。&lt;br>
 可以用 &lt;code>docker exec garaged /garage status&lt;/code> 查看节点状态。下面的步骤会用到当前节点 ID。&lt;br>
 &lt;img src="https://oos.ogr.xyz/b0a94eb6386d5e16e371942aa6394d5d7cb365556d9ba2ee4ec09404484d18ff.png"
