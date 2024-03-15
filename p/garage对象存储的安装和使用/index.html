@@ -1,0 +1,260 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='介绍轻量级 S3 兼容的对象存储 Garage 项目的自托管部署和使用方法'><title>Garage对象存储的安装和使用</title>
+<link rel=canonical href=https://ogr.xyz/p/garage%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8/><link rel=stylesheet href=/scss/style.min.abbd69b2908fdfcd5179898beaafd374514a86538d81639ddd2c58c06ae54e40.css><meta property='og:title' content='Garage对象存储的安装和使用'><meta property='og:description' content='介绍轻量级 S3 兼容的对象存储 Garage 项目的自托管部署和使用方法'><meta property='og:url' content='https://ogr.xyz/p/garage%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8/'><meta property='og:site_name' content='个人博客'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Garage'><meta property='article:tag' content='Object Storage'><meta property='article:published_time' content='2024-03-14T13:35:17+08:00'><meta property='article:modified_time' content='2024-03-14T13:35:17+08:00'><meta name=twitter:title content="Garage对象存储的安装和使用"><meta name=twitter:description content="介绍轻量级 S3 兼容的对象存储 Garage 项目的自托管部署和使用方法"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_huda2458f72ce188392d75c5d51cd8e24e_373_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>个人博客</a></h1><h2 class=site-description>个人博客，欢迎交流</h2></div></header><ol class=social-menu><li><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li></ol><div class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></div></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#背景>背景</a></li><li><a href=#准备>准备</a></li><li><a href=#安装-garage>安装 Garage</a><ol><li><a href=#准备配置文件>准备配置文件</a></li><li><a href=#创建容器>创建容器</a></li><li><a href=#初始化节点>初始化节点</a></li><li><a href=#初始化存储桶>初始化存储桶</a></li></ol></li><li><a href=#使用-garage>使用 Garage</a><ol><li><a href=#添加子域名>添加子域名</a></li><li><a href=#nginx-反向代理>Nginx 反向代理</a></li><li><a href=#客户端工具>客户端工具</a></li></ol></li><li><a href=#总结>总结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8/>对象存储</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/garage%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8%E7%9A%84%E5%AE%89%E8%A3%85%E5%92%8C%E4%BD%BF%E7%94%A8/>Garage对象存储的安装和使用</a></h2><h3 class=article-subtitle>介绍轻量级 S3 兼容的对象存储 Garage 项目的自托管部署和使用方法</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 14, 2024</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 6 分钟</time></div></footer></div></header><section class=article-content><h2 id=背景>背景</h2><p>前几年 Oracle Cloud 云服务推出的时候，申请了日区（ap-tokyo-1）永久免费资源。包括免费主机和共计 200GB 的块存储额度。
+闲来无事，整理了一下：保留一台 Ubuntu Linux 实例，实例初始存储空间 50G 本地磁盘，剩余 150G 额度创建一个块存储卷通过iSCSI挂载到实例上。
+实例配置: 1 OCPU，1GB Mem，0.48Mbps Bandwidth，整体性能一般，当然能免费使用也没什么可说的。
+创建好实例并装好 Docker 后一直没什么实际用处，有段时间用来挂载小雅Alist看视频。</p><p>最近心血来潮来折腾个人博客。调查了一番之后选择用 Hugo + Markdown 生成静态博客。如何搭建静态博客暂且不表，其中涉及到图片等资源如何存储的问题。图片可以选择跟博客内容一起发布和托管，但这不符合折腾的精神。必须要搞一个图床！</p><p>关于图床，有一些开源自托管部署的项目，但目前以 S3 为代表的对象存储被广泛应用，非常适合用于搭建图床。各大云服务商都有推出自己的对象存储服务，有的有免费存储空间额度。但是一般免费额度都比较小，一般在 20G 以下。考虑到 Oracle 免费实例上有 150G 的存储空间，那有没有可以自己搭建的 S3 兼容的开源项目呢？</p><p>那必须是有的，比较流行的是 Ceph 和 Minio。Ceph 生态庞大但是比较重量级，不适合个人用户。Minio 对 S3 的兼容性最好，支持用 Docker 部署单实例使用，部署和使用都很简单。在实例上安装体验了一下，发现即使没存储内容也很容易把内存占满，所以只能放弃了。</p><p>经过一番搜索后，看到有人推荐比 Minio 更轻量级的开源项目 Garage。Garage 是一个法国团队开发的 S3 兼容的对象存储，比较小众没什么知名度，网上的资料也比较少。这里记录一下 Garage 的安装和使用。Garage 的介绍可以参考官方文档，文档比较简明扼要，全读一遍也费不了多少时间。</p><h2 id=准备>准备</h2><p>我用 Linuxserver.io 的 <a class=link href=https://docs.linuxserver.io/images/docker-swag/ target=_blank rel=noopener>SWAG</a> (Secure Web Application Gateway) Docker 镜像在实例上安装 Nginx 环境。其中需要购入一个域名，这里以 <code>mydomin.com</code> 指代。SWAG 配置好域名服务商的认证信息后可以自动申请和管理 Let&rsquo;s Encrypt SSL 证书。非常适合个人使用。详细的安装使用说明参考<a class=link href=https://docs.linuxserver.io/images/docker-swag/ target=_blank rel=noopener>官方文档</a>。</p><p>Docker 创建一个名字为 <code>lsio</code> 的 Bridge 类型的网络，所有 Docker 容器都使用这个网络，这样就可以通过容器名称相互访问。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker run -d <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --name<span class=o>=</span>swag <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --cap-add<span class=o>=</span>NET_ADMIN <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>PUID</span><span class=o>=</span><span class=k>$(</span>id -u<span class=k>)</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>PGID</span><span class=o>=</span><span class=k>$(</span>id -u<span class=k>)</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>TZ</span><span class=o>=</span>Asia/Singapore <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>URL</span><span class=o>=</span>mydomain.com <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=s1>&#39;SUBDOMAINS=\*,\*.web-garage&#39;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>VALIDATION</span><span class=o>=</span>dns <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>DNSPLUGIN</span><span class=o>=</span>aliyun <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>EMAIL</span><span class=o>=</span>myaliyunemail@gmail.com <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -p 443:443 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -v /etc/swag:/config <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --restart always <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --net<span class=o>=</span>lsio <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --dns-search<span class=o>=</span>. <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  lscr.io/linuxserver/swag:latest
+</span></span></code></pre></td></tr></table></div></div><p>这里我使用的是阿里云托管域名。并且指定用通配符为所有二级域名 <code>*.mydomain.com</code> 和所有三级域名 <code>*.web-garage.mydomain.com</code> 申请SSL证书。
+确保443端口能被公网访问。</p><h2 id=安装-garage>安装 Garage</h2><p>个人使用的话用 Docker 镜像安装单实例即可。</p><h3 id=准备配置文件>准备配置文件</h3><p>这里配置文件路径为 <code>/etc/garage/garage.toml</code>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-toml data-lang=toml><span class=line><span class=cl><span class=nx>metadata_dir</span> <span class=p>=</span> <span class=s2>&#34;/var/lib/garage/meta&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>data_dir</span> <span class=p>=</span> <span class=s2>&#34;/var/lib/garage/data&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>db_engine</span> <span class=p>=</span> <span class=s2>&#34;lmdb&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>replication_mode</span> <span class=p>=</span> <span class=s2>&#34;none&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>compression_level</span> <span class=p>=</span> <span class=mi>2</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>rpc_bind_addr</span> <span class=p>=</span> <span class=s2>&#34;[::]:3901&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>rpc_public_addr</span> <span class=p>=</span> <span class=s2>&#34;127.0.0.1:3901&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>rpc_secret</span> <span class=p>=</span> <span class=s2>&#34;$(openssl rand -hex 32)&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>s3_api</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>s3_region</span> <span class=p>=</span> <span class=s2>&#34;garage&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>api_bind_addr</span> <span class=p>=</span> <span class=s2>&#34;[::]:3900&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>root_domain</span> <span class=p>=</span> <span class=s2>&#34;.s3-garage.mydomain.com&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=nx>s3_web</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nx>bind_addr</span> <span class=p>=</span> <span class=s2>&#34;[::]:3902&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>root_domain</span> <span class=p>=</span> <span class=s2>&#34;.web-garage.mydomain.com&#34;</span>
+</span></span><span class=line><span class=cl><span class=nx>index</span> <span class=p>=</span> <span class=s2>&#34;index.html&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>其中 <code>rpc_secret</code> 可以用 <code>openssl rand -hex 32</code> 生成，3901 是集群节点内部通信访问端口，3900 是 S3 API 访问端口，Garage 不支持访问策略，所以使用 S3 API 时必须要使用 Secret 访问和操作 Bucket。也就是说无法在浏览器中通过 <code>https://&lt;bucket>.s3-garage.mydomain.com/&lt;key></code> 或 <code>https://s3-garage.mydomain.com/&lt;bucket>/&lt;key></code> 访问内容。<br>那要如何在公网匿名访问内容呢？那就得要用到 3902 端口了，这里指的是 Garage 支持托管静态网站，比如说把 Hugo 站点上传到 Garage Bucket，就可以通过 <code>https://&lt;bucket>.web-garage.mydomain.com</code> 访问网站了。那已知 Object Key 的情况下就可以通过 <code>https://&lt;bucket>.web-garage.mydomain.com/&lt;key></code> 变相访问任意文件了。</p><h3 id=创建容器>创建容器</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker run -d <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --name garaged <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --restart always <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --network lsio <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -v /etc/garage/garage.toml:/etc/garage.toml <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -v /mnt/iscsi/garage/meta:/var/lib/garage/meta <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -v /mnt/iscsi/garage/data:/var/lib/garage/data <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  dxflrs/garage:v0.9.3
+</span></span></code></pre></td></tr></table></div></div><p>其中 <code>/mnt/iscsi</code> 是块存储卷的挂载路径，在此创建 Garage 的 <code>meta</code> 和 <code>data</code> 目录。为了安全起见，不映射任何公开端口，统一用域名走 Nginx HTTPS 443 端口访问。
+至此，容器就跑起来了。容器内部不包含 SHELL 程序，不能使用 <code>docker exec -it garaged /bin/sh</code> 进行交互式访问。需要使用 <code>docker exec garaged /garage</code>，所有的命令都可以用 <code>--help</code> 自解释。<br>可以用 <code>docker logs garaged -f</code> 查看日志。<br>可以用 <code>docker exec garaged /garage status</code> 查看节点状态。下面的步骤会用到当前节点 ID。<br><img src=https://oos.ogr.xyz/b0a94eb6386d5e16e371942aa6394d5d7cb365556d9ba2ee4ec09404484d18ff.png loading=lazy alt="picture 0"></p><h3 id=初始化节点>初始化节点</h3><p>在使用之前需要先初始化节点，即配置当前节点的区域和存储空间信息。</p><p>方法：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage layout assign -z &lt;zone&gt; -c &lt;space&gt; &lt;NODE ID&gt;
+</span></span></code></pre></td></tr></table></div></div><p>示例：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage layout assign -z jp -c 50G aabf22f2b4bc9a1b
+</span></span></code></pre></td></tr></table></div></div><p>最后需要使用上述配置生效。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage layout apply --version<span class=o>=</span><span class=m>1</span>
+</span></span></code></pre></td></tr></table></div></div><p>对于新的配置需要指定 <code>--version</code> 参数，在之前的版本号基础上 +1，因为是新创建的节点，版本号相当于 0，所以这里是 <code>--version=1</code>。</p><p>再使用 <code>garage status</code> 查看状态信息。
+<img src=https://oos.ogr.xyz/875e179b1385adf4ee959e536072c5d726e750acfbb0cd0b4e5eaed8599854cf.png loading=lazy alt="picture 1"></p><p>至此，当前节点初始化完成，可以创建存储桶（Bucket）和访问密钥（Key）了。</p><h3 id=初始化存储桶>初始化存储桶</h3><p>创建 Bucket 很简单，指定 bucket name 就可以了。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage bucket create blog
+</span></span></code></pre></td></tr></table></div></div><p>这里创建了一个名为 <code>blog</code> 的 Bucket。</p><p>可以用下列命令检查 Bucket 状态。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage bucket list
+</span></span><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage bucket info blog
+</span></span></code></pre></td></tr></table></div></div><p>要访问上述创建的 Bucket，还需要先创建 API Key。一个 Key 可以配置为访问多个 Bucket，一个 Bucket 可以被多个 Key 访问。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage key create blog-app-key
+</span></span></code></pre></td></tr></table></div></div><p>这里创建一个名为 <code>blog-app-key</code> 的访问密钥，记录下输出的 <code>Key ID</code> 和 <code>Secret key</code>。</p><p>可以用下列命令检查 Key 状态。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage key list
+</span></span><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage key info blog-app-key
+</span></span></code></pre></td></tr></table></div></div><p>接下来授权 Key 访问 Bucket。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage bucket allow <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --read <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --write <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --owner <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    blog <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --key blog-app-key
+</span></span></code></pre></td></tr></table></div></div><p>至此可以使用各种 S3 兼容的客户端和库访问存储桶了。需要注意的点：</p><ol><li><code>region</code> 固定为 <code>garage</code>。</li><li>需要配置 <code>force_path_style=true</code>，以使用 <code>https://s3-garage.mydomain.com/&lt;bucket></code> 的形式，而不是 <code>https://&lt;bucket>.s3-garage.mydomain.com</code>。后者需要为每个桶都要配置域名。</li></ol><p>最后要允许存储桶能被公开匿名访问。Garage 不支持访问策略，只能通过静态网站托管来间接实现。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>docker <span class=nb>exec</span> garaged /garage bucket website --allow blog
+</span></span></code></pre></td></tr></table></div></div><p>至此，只需要添加域名 <code>blog.web-garage.mydomain.com</code> 就可以访问 <code>blog</code> 桶里面的文件了。访问方式：<code>https://blog.web-garage.mydomain.com/&lt;key></code>。</p><p>最终用 <code>garage status</code> 查看信息时是这样的。<br><img src=https://oos.ogr.xyz/343aa57f00aeb3da24a1153cca375ba4f1272deb1241ba4853fe8be0cf8ccf2b.png loading=lazy alt="picture 2"></p><h2 id=使用-garage>使用 Garage</h2><h3 id=添加子域名>添加子域名</h3><p>上述步骤提及到三个域名：<code>s3-garage.mydomain.com</code>、<code>web-garage.mydomain.com</code>、<code>blog.web-garage.mydomain.com</code>。其中 <code>web-garage.mydomain.com</code> 并不会实际使用到。<br>在域名托管商为 <code>mydomain.com</code> 添加两个子域名 <code>s3-garage.mydomain.com</code> 和 <code>blog.web-garage.mydomain.com</code>，都指向当前实例的公网IP。</p><h3 id=nginx-反向代理>Nginx 反向代理</h3><p>在 SWAG 容器的 <code>/config/swag/nginx/proxy-confs</code> 目录下创建以下两个文件，然后重启容器。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=c1># s3-garage.subdomain.conf
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kn>listen</span> <span class=mi>443</span> <span class=s>ssl</span> <span class=s>http2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>listen</span> <span class=s>[::]:443</span> <span class=s>ssl</span> <span class=s>http2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>server_name</span> <span class=s>s3-garage.mydomain.com</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>include</span> <span class=s>/config/nginx/ssl.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>client_max_body_size</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>include</span> <span class=s>/config/nginx/proxy.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>include</span> <span class=s>/config/nginx/resolver.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_app</span> <span class=s>garaged</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_port</span> <span class=mi>3900</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_proto</span> <span class=s>http</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>proxy_pass</span> <span class=nv>$upstream_proto://$upstream_app:$upstream_port</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># Disable buffering to a temporary file.
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=kn>proxy_max_temp_file_size</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-nginx data-lang=nginx><span class=line><span class=cl><span class=c1># web-garage.subdomain.conf
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=k>server</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kn>listen</span> <span class=mi>443</span> <span class=s>ssl</span> <span class=s>http2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kn>listen</span> <span class=s>[::]:443</span> <span class=s>ssl</span> <span class=s>http2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>server_name</span> <span class=s>*.web-garage.mydomain.com</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>include</span> <span class=s>/config/nginx/ssl.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>client_max_body_size</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=kn>location</span> <span class=s>/</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=kn>include</span> <span class=s>/config/nginx/proxy.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>include</span> <span class=s>/config/nginx/resolver.conf</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_app</span> <span class=s>garaged</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_port</span> <span class=mi>3902</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>set</span> <span class=nv>$upstream_proto</span> <span class=s>http</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=kn>proxy_pass</span> <span class=nv>$upstream_proto://$upstream_app:$upstream_port</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>之后就可以通过 <code>https://s3-garage.mydomain.com</code> 和 <code>https://blog.web-garage.mydomain.com</code> 访问 Garage 了。</p><h3 id=客户端工具>客户端工具</h3><p>可以和 Garage 集成的工具：</p><ul><li>awscli</li><li>minio-client</li><li>s3cmd</li><li>rclone</li><li>alist</li><li>Cyberduck</li><li>WinSCP</li></ul><p>Cloudflare Workers 里面推荐使用 <code>aws4fetch</code> 库。</p><p>对于使用 VS Code 写 Markdown 的用户，推荐 <code>Markdown Image</code> 插件。该插件以粘贴的形式自动上传至云服务并生成可访问链接。详情可参见<a class=link href=https://github.com/imlinhanchao/vsc-markdown-image target=_blank rel=noopener>插件说明</a>。</p><p>Markdown Image 插件实际使用配置如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.base.uploadMethod&#34;</span><span class=err>:</span> <span class=s2>&#34;S3&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.endpoint&#34;</span><span class=err>:</span> <span class=s2>&#34;https://s3-garage.mydomain.com&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.region&#34;</span><span class=err>:</span> <span class=s2>&#34;garage&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.bucketName&#34;</span><span class=err>:</span> <span class=s2>&#34;blog&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.accessKeyId&#34;</span><span class=err>:</span> <span class=s2>&#34;&lt;Key ID&gt;&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.secretAccessKey&#34;</span><span class=err>:</span> <span class=s2>&#34;&lt;Secret key&gt;&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.cdn&#34;</span><span class=err>:</span> <span class=s2>&#34;https://blog.web-garage.mydomain.com/${filepath}&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;markdown-image.s3.config&#34;</span><span class=err>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&#34;forcePathStyle&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=总结>总结</h2><p>个人用户自建 S3 存储可以突破云厂商的免费额度限制，在国内的环境下还可以避免被恶意刷流量。并且 S3 已经是对象存储的事实标准，将来如果想要迁移到其他地方也是非常方便的。</p><p>对于 Garage、Minio 这种开源项目，更加倾向于简洁性，包括简单的架构，简单的部署和维护。那么自然地就不可能有极致的性能了，比如说高吞吐和大量小文件的场景就会有瓶颈。当然个人用户一般也没有极致的性能需求。</p><p>Minio 是 Go 语言实现的，知名度较高，生态也比较丰富，使用也比较方便。<br>Garage 是 Rust 语言实现的，相较而言比较小众，更谈不上生态，自身甚至不包括 WebUI 管理界面。</p><p>但如果你想在一台性能较弱的主机上部署 S3 兼容服务，那 Garage 或许是个不错的选择。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/garage/>Garage</a>
+<a href=/tags/object-storage/>Object Storage</a></section></footer></article><script src=https://giscus.app/client.js data-repo=hzj629206/blog data-repo-id=R_kgDOLddzNw data-category=General data-category-id=DIC_kwDOLddzN84Cd0UC data-mapping=pathname data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=en crossorigin=anonymous async></script><script>function setGiscusTheme(e){let t=document.querySelector("iframe.giscus-frame");t&&t.contentWindow.postMessage({giscus:{setConfig:{theme:e}}},"https://giscus.app")}(function(){addEventListener("message",t=>{if(event.origin!=="https://giscus.app")return;e()}),window.addEventListener("onColorSchemeChange",e);function e(){setGiscusTheme(document.documentElement.dataset.scheme==="light"?"light":"dark")}})()</script><footer class=site-footer><section class=copyright>&copy;
+2024 ogr.xyz</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.23.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
