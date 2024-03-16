@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Garage on 平凡的路</title><link>https://ogr.xyz/tags/garage/</link><description>Recent content in Garage on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>ogr.xyz</copyright><lastBuildDate>Thu, 14 Mar 2024 13:35:17 +0800</lastBuildDate><atom:link href="https://ogr.xyz/tags/garage/index.xml" rel="self" type="application/rss+xml"/><item><title>Garage对象存储的安装和使用</title><link>https://ogr.xyz/p/garage-setup/</link><pubDate>Thu, 14 Mar 2024 13:35:17 +0800</pubDate><guid>https://ogr.xyz/p/garage-setup/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
 &lt;p>前几年 Oracle Cloud 云服务推出的时候，申请了日区（ap-tokyo-1）永久免费资源。包括免费主机和共计 200GB 的块存储额度。&lt;br>
 闲来无事，整理一下：保留一台 Ubuntu Linux 实例，实例初始存储空间 50G 本地磁盘，剩余 150G 额度创建一个块存储卷通过iSCSI挂载到实例上。&lt;br>
-实例配置: 1 OCPU，1GB Mem，0.48Mbps Bandwidth，整体性能一般，当然能免费使用也没什么可说的。创建好实例并装好 Docker 后一直没什么实际用处，有段时间用来挂载小雅Alist看视频。&lt;/p>
+实例配置: 1 OCPU，1GB Mem，0.48Gbps Bandwidth，整体性能一般，当然能免费使用也没什么可说的。创建好实例并装好 Docker 后一直没什么实际用处，有段时间用来挂载小雅Alist看视频。&lt;/p>
 &lt;p>最近心血来潮来折腾个人博客。调查了一番之后选择用 Hugo + Markdown 生成静态博客。如何搭建静态博客暂且不表，其中涉及到图片等资源如何存储的问题。图片可以选择跟博客内容一起发布和托管，但这不符合折腾的精神。必须要搞一个图床！&lt;/p>
-&lt;p>关于图床，有一些开源自托管部署的项目，但目前以 S3 为代表的对象存储被广泛应用，非常适合用于搭建图床。各大云服务商都有推出自己的对象存储服务，有的有免费存储空间额度。但是一般免费额度都比较小，一般在 20G 以下。考虑到 Oracle 免费实例上有 150G 的存储空间，那有没有可以自己搭建的 S3 兼容的开源项目呢？&lt;/p>
-&lt;p>那必须是有的，比较流行的是 Ceph 和 Minio。Ceph 生态庞大但是比较重量级，不适合个人用户。Minio 对 S3 的兼容性最好，支持用 Docker 部署单实例使用，部署和使用都很简单。在实例上安装体验了一下，发现即使没存储内容也很容易把内存占满，所以只能放弃了。&lt;/p>
+&lt;p>关于图床，有一些自托管部署的开源项目，但目前以 S3 为代表的对象存储被广泛应用，非常适合用于搭建图床。各大云服务商都有推出自己的对象存储服务，有的有免费存储空间额度。但是一般免费额度都比较小，一般在 20G 以下。考虑到 Oracle 免费实例上有 150G 的存储空间，那有没有可以自己搭建的 S3 兼容的开源项目呢？&lt;/p>
+&lt;p>那必须是有的，比较流行的是 Ceph 和 Minio。Ceph 生态庞大但是比较重量级，不适合个人用户。Minio 对 S3 的兼容性最好，支持用 Docker 部署单实例使用，部署和使用都很简单。在实例上安装体验了一下，发现即使没存储内容时也很容易把内存占满，所以只能放弃了。&lt;/p>
 &lt;p>经过一番搜索后，看到有人推荐比 Minio 更轻量级的开源项目 Garage。&lt;a class="link" href="https://garagehq.deuxfleurs.fr/" target="_blank" rel="noopener"
 >Garage&lt;/a> 是一个法国团队开发的 S3 兼容的对象存储，比较小众没什么知名度，网上的资料也比较少。这里记录一下 Garage 的安装和使用。Garage 的介绍可以参考&lt;a class="link" href="https://garagehq.deuxfleurs.fr/documentation/quick-start/" target="_blank" rel="noopener"
 >官方文档&lt;/a>，文档比较简明扼要，全读一遍也费不了多少时间。&lt;/p>
@@ -54,7 +54,7 @@
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>这里我使用的是阿里云托管域名。并且指定用通配符为所有二级域名 &lt;code>*.mydomain.com&lt;/code> 和所有三级域名 &lt;code>*.web-garage.mydomain.com&lt;/code> 申请SSL证书。
-确保443端口能被公网访问。&lt;/p>
+在&lt;strong>虚拟云网络&lt;/strong>里面添加入站规则，确保 443 端口能被公网访问。&lt;/p>
 &lt;h2 id="安装-garage">安装 Garage&lt;/h2>
 &lt;p>个人使用的话用 Docker 镜像安装单实例即可。&lt;/p>
 &lt;h3 id="准备配置文件">准备配置文件&lt;/h3>
@@ -107,7 +107,7 @@
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">index&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;index.html&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>其中 &lt;code>rpc_secret&lt;/code> 可以用 &lt;code>openssl rand -hex 32&lt;/code> 生成，3901 是集群节点内部通信访问端口，3900 是 S3 API 访问端口，Garage 不支持访问策略，所以使用 S3 API 时必须要使用 Secret 访问和操作 Bucket。也就是说无法在浏览器中通过 &lt;code>https://&amp;lt;bucket&amp;gt;.s3-garage.mydomain.com/&amp;lt;key&amp;gt;&lt;/code> 或 &lt;code>https://s3-garage.mydomain.com/&amp;lt;bucket&amp;gt;/&amp;lt;key&amp;gt;&lt;/code> 访问内容。&lt;br>
+&lt;/div>&lt;p>其中 &lt;code>rpc_secret&lt;/code> 可以用 &lt;code>openssl rand -hex 32&lt;/code> 生成，3901 是集群节点内部通信访问端口，3900 是 S3 API 访问端口，Garage 不支持访问策略，所以使用 S3 API 时必须要使用 Secret Key 访问和操作 Bucket。也就是说无法在浏览器中通过 &lt;code>https://&amp;lt;bucket&amp;gt;.s3-garage.mydomain.com/&amp;lt;key&amp;gt;&lt;/code> 或 &lt;code>https://s3-garage.mydomain.com/&amp;lt;bucket&amp;gt;/&amp;lt;key&amp;gt;&lt;/code> 访问内容。&lt;br>
 那要如何在公网匿名访问内容呢？那就得要用到 3902 端口了，这里指的是 Garage 支持托管静态网站，比如说把 Hugo 站点上传到 Garage Bucket，就可以通过 &lt;code>https://&amp;lt;bucket&amp;gt;.web-garage.mydomain.com&lt;/code> 访问网站了。那已知 Object Key 的情况下就可以通过 &lt;code>https://&amp;lt;bucket&amp;gt;.web-garage.mydomain.com/&amp;lt;key&amp;gt;&lt;/code> 变相访问任意文件了。&lt;/p>
 &lt;h3 id="创建容器">创建容器&lt;/h3>
 &lt;div class="highlight">&lt;div class="chroma">
@@ -147,7 +147,7 @@ alt="picture 0"
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">docker &lt;span class="nb">exec&lt;/span> garaged /garage layout assign -z &amp;lt;zone&amp;gt; -c &amp;lt;space&amp;gt; &amp;lt;NODE ID&amp;gt;
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">docker &lt;span class="nb">exec&lt;/span> garaged /garage layout assign -z &amp;lt;zone&amp;gt; -c &amp;lt;capacity&amp;gt; &amp;lt;NODE ID&amp;gt;
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>示例：&lt;/p>
