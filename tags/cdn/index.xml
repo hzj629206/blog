@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CDN on 平凡的路H</title><link>https://ogr.xyz/tags/cdn/</link><description>Recent content in CDN on 平凡的路H</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>hzj629206@gmail.com (hzj629206)</managingEditor><webMaster>hzj629206@gmail.com (hzj629206)</webMaster><copyright>ogr.xyz</copyright><lastBuildDate>Fri, 15 Mar 2024 20:47:04 +0800</lastBuildDate><atom:link href="https://ogr.xyz/tags/cdn/index.xml" rel="self" type="application/rss+xml"/><item><title>Oracle 免费对象存储使用 Cloudflare 做 CDN</title><link>https://ogr.xyz/p/oracle-object-storage/</link><pubDate>Fri, 15 Mar 2024 20:47:04 +0800</pubDate><author>hzj629206@gmail.com (hzj629206)</author><guid>https://ogr.xyz/p/oracle-object-storage/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
 &lt;p>上篇博文《&lt;a class="link" href="https://ogr.xyz/p/garage-setup/" >Garage对象存储的安装和使用&lt;/a>》介绍了在 Oracle Cloud 的免费实例上用 Garage 搭建 S3 兼容的对象存储服务。&lt;/p>
-&lt;p>实际上 Oracle Cloud 的免费套餐里面还有 20GB 的 S3 兼容的对象存储额度。本着不用白不用的精神，来看看怎么利用起来。&lt;br>
-本博客就是托管于 Cloudflare Pages，图床使用 Oracle 对象存储并使用 Cloudflare Workers 做 CDN 加速。&lt;/p>
+&lt;p>实际上 Oracle Cloud 的免费套餐里面还有 20GB 的 S3 兼容的对象存储额度。本着不用白不用的精神，来看看怎么利用起来。&lt;/p>
+&lt;p>本博客就是托管于 Cloudflare Pages，图床使用 Oracle 对象存储并使用 Cloudflare Workers 做 CDN 加速。&lt;/p>
 &lt;p>相比较用开源项目自行搭建的对象存储服务，云厂商的对象存储服务一般功能更多。OCI Object Storage 的一个优点是可以进行预授权，在存储桶设为私有的情况下，Web 应用程序也可以很方便地通过授权码进行访问。&lt;br>
 （没有测试过是否支持 S3 兼容的访问策略，如果兼容的话，也可以用访问策略实现允许匿名以只读的形式访问。）&lt;/p>
 &lt;h2 id="创建存储桶">创建存储桶&lt;/h2>
