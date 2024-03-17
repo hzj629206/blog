@@ -190,6 +190,10 @@
 </span><span class=lnt>177
 </span><span class=lnt>178
 </span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-javascript data-lang=javascript><span class=line><span class=cl><span class=kr>const</span> <span class=nx>FileMimeType</span> <span class=o>=</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>  <span class=s1>&#39;audio/x-mpeg&#39;</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;mpega&#39;</span><span class=p>],</span>
 </span></span><span class=line><span class=cl>  <span class=s1>&#39;video/3gpp&#39;</span><span class=o>:</span> <span class=p>[</span><span class=s1>&#39;3gpp&#39;</span><span class=p>,</span> <span class=s1>&#39;3gp&#39;</span><span class=p>],</span>
@@ -351,6 +355,10 @@
 </span></span><span class=line><span class=cl>    <span class=nx>newRequest</span><span class=p>.</span><span class=nx>headers</span><span class=p>.</span><span class=nx>set</span><span class=p>(</span><span class=s1>&#39;X-Forwarded-Host&#39;</span><span class=p>,</span> <span class=nx>host</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=kr>const</span> <span class=nx>response</span> <span class=o>=</span> <span class=kr>await</span> <span class=nx>fetch</span><span class=p>(</span><span class=nx>newRequest</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>response</span><span class=p>.</span><span class=nx>status</span> <span class=o>!=</span> <span class=mi>200</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>response</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=kd>let</span> <span class=nx>contentType</span> <span class=o>=</span> <span class=nx>response</span><span class=p>.</span><span class=nx>headers</span><span class=p>.</span><span class=nx>get</span><span class=p>(</span><span class=s1>&#39;Content-Type&#39;</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>contentType</span> <span class=o>&amp;&amp;</span> <span class=nx>contentType</span> <span class=o>!=</span> <span class=s1>&#39;application/octet-stream&#39;</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=nx>response</span>
@@ -369,7 +377,8 @@
 </span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>newResponse</span>
 </span></span><span class=line><span class=cl>  <span class=p>},</span>
 </span></span><span class=line><span class=cl><span class=p>};</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=将二级域名指向-worker>将二级域名指向 Worker</h3><p>进入到创建的 Worker 管理页面，Settings -> Add route。<img src=https://oos.ogr.xyz/7a97b2030fda600be4d16074a3c043e90c280a3cf77329fc4565e72c56cfd810.png loading=lazy alt="picture 7"><br>Route 填 <code>oos.ogr.xyz/*</code>，Zone 选 <code>ogr.xyz</code>。这样就把 <code>oos.ogr.xyz</code> 的所有请求路由到当前 Worker。</p><h3 id=开启缓存>开启缓存</h3><p>进入到规则管理页面，Home -> Websites -> ogr.xyz -> Rules -> Page Rules。</p><p>点击 Create Page Rule。<img src=https://oos.ogr.xyz/5f84565929ce6826c74e818302ad93ed2354a2e3ccdd19ca73553eb87d17653b.png loading=lazy alt="picture 8"><br>URL 填 <code>oos.ogr.xyz/*</code>, Pick a Setting 选 <code>Cache Level</code>，Select Cache Level 选 <code>Cache Everything</code>。这样所有 <code>oos.ogr.xyz</code> 请求的响应都会被缓存，就达到 CDN 的效果了。</p><h2 id=使用方法>使用方法</h2><p>至此，所有的准备工作就完成了，对于上传至存储桶的文件，可以通过 <code>https://oos.ogr.xyz/&lt;key></code> 访问到了。</p><p>对于使用 VS Code 写 Markdown 的用户，推荐 <code>Markdown Image</code> 插件。该插件以粘贴的形式自动上传至云服务并生成可访问链接。详情可参见<a class=link href=https://github.com/imlinhanchao/vsc-markdown-image target=_blank rel=noopener>插件说明</a>。</p><p>Markdown Image 插件实际使用配置如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><h3 id=将二级域名指向-worker>将二级域名指向 Worker</h3><p>进入到创建的 Worker 管理页面，Settings -> Add route。
+<img src=https://oos.ogr.xyz/7a97b2030fda600be4d16074a3c043e90c280a3cf77329fc4565e72c56cfd810.png loading=lazy alt="picture 7"><br>Route 填 <code>oos.ogr.xyz/*</code>，Zone 选 <code>ogr.xyz</code>。这样就把 <code>oos.ogr.xyz</code> 的所有请求路由到当前 Worker。</p><h3 id=开启缓存>开启缓存</h3><p>进入到规则管理页面，Home -> Websites -> ogr.xyz -> Rules -> Page Rules。</p><p>点击 Create Page Rule。<br><img src=https://oos.ogr.xyz/5f84565929ce6826c74e818302ad93ed2354a2e3ccdd19ca73553eb87d17653b.png loading=lazy alt="picture 8"><br>URL 填 <code>oos.ogr.xyz/*</code>, Pick a Setting 选 <code>Cache Level</code>，Select Cache Level 选 <code>Cache Everything</code>。这样所有 <code>oos.ogr.xyz</code> 请求的响应都会被缓存，就达到 CDN 的效果了。</p><h2 id=使用方法>使用方法</h2><p>至此，所有的准备工作就完成了，对于上传至存储桶的文件，可以通过 <code>https://oos.ogr.xyz/&lt;key></code> 访问到了。</p><p>对于使用 VS Code 写 Markdown 的用户，推荐 <code>Markdown Image</code> 插件。该插件以粘贴的形式自动上传至云服务并生成可访问链接。详情可参见<a class=link href=https://github.com/imlinhanchao/vsc-markdown-image target=_blank rel=noopener>插件说明</a>。</p><p>Markdown Image 插件实际使用配置如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4

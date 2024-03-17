@@ -234,6 +234,10 @@ alt="picture 6"
 &lt;/span>&lt;span class="lnt">177
 &lt;/span>&lt;span class="lnt">178
 &lt;/span>&lt;span class="lnt">179
+&lt;/span>&lt;span class="lnt">180
+&lt;/span>&lt;span class="lnt">181
+&lt;/span>&lt;span class="lnt">182
+&lt;/span>&lt;span class="lnt">183
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">FileMimeType&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
@@ -397,6 +401,10 @@ alt="picture 6"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newRequest&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">headers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;X-Forwarded-Host&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">host&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">response&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">fetch&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">newRequest&lt;/span>&lt;span class="p">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">response&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">status&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">200&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">response&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">let&lt;/span> &lt;span class="nx">contentType&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">response&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">headers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Content-Type&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">contentType&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">contentType&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="s1">&amp;#39;application/octet-stream&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">response&lt;/span>
@@ -418,14 +426,16 @@ alt="picture 6"
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;h3 id="将二级域名指向-worker">将二级域名指向 Worker&lt;/h3>
-&lt;p>进入到创建的 Worker 管理页面，Settings -&amp;gt; Add route。&lt;img src="https://oos.ogr.xyz/7a97b2030fda600be4d16074a3c043e90c280a3cf77329fc4565e72c56cfd810.png"
+&lt;p>进入到创建的 Worker 管理页面，Settings -&amp;gt; Add route。
+&lt;img src="https://oos.ogr.xyz/7a97b2030fda600be4d16074a3c043e90c280a3cf77329fc4565e72c56cfd810.png"
 loading="lazy"
 alt="picture 7"
 >&lt;br>
 Route 填 &lt;code>oos.ogr.xyz/*&lt;/code>，Zone 选 &lt;code>ogr.xyz&lt;/code>。这样就把 &lt;code>oos.ogr.xyz&lt;/code> 的所有请求路由到当前 Worker。&lt;/p>
 &lt;h3 id="开启缓存">开启缓存&lt;/h3>
 &lt;p>进入到规则管理页面，Home -&amp;gt; Websites -&amp;gt; ogr.xyz -&amp;gt; Rules -&amp;gt; Page Rules。&lt;/p>
-&lt;p>点击 Create Page Rule。&lt;img src="https://oos.ogr.xyz/5f84565929ce6826c74e818302ad93ed2354a2e3ccdd19ca73553eb87d17653b.png"
+&lt;p>点击 Create Page Rule。&lt;br>
+&lt;img src="https://oos.ogr.xyz/5f84565929ce6826c74e818302ad93ed2354a2e3ccdd19ca73553eb87d17653b.png"
 loading="lazy"
 alt="picture 8"
 >&lt;br>
