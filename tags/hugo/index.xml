@@ -2,8 +2,8 @@
 &lt;p>我的博客是用 &lt;a class="link" href="https://gohugo.io/" target="_blank" rel="noopener"
 >Hugo&lt;/a> 搭建的，主题是 &lt;a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener"
 >hugo-theme-stack&lt;/a>。经过一段时间的摸索，对 Hugo 和 &lt;code>hugo-theme-stack&lt;/code> 都有了一定的了解。&lt;br>
-&lt;code>hugo-theme-stack&lt;/code> 简洁大方同时又预留了扩展性，Hugo 构建流水线支持处理 Sass 和 TypeScript/JavaScript。
-说到扩展性，最简单地就是通过自定义 CSS 和 Javascript 来对站点进行美化或改造。&lt;code>hugo-theme-stack&lt;/code> 预留了 &lt;code>assets/scss/custom.scss&lt;/code> 和 &lt;code>assets/ts/custom.ts&lt;/code> 分别用于自定义 CSS 和 TypeScript/JavaScript。&lt;/p>
+&lt;code>hugo-theme-stack&lt;/code> 简洁大方同时又预留了扩展性，Hugo 构建流水线支持处理 Sass 和 TypeScript/JavaScript。&lt;/p>
+&lt;p>说到扩展性，最简单地就是通过自定义 CSS 和 Javascript 来对站点进行美化或改造。&lt;code>hugo-theme-stack&lt;/code> 预留了 &lt;code>assets/scss/custom.scss&lt;/code> 和 &lt;code>assets/ts/custom.ts&lt;/code> 分别用于自定义 CSS 和 TypeScript/JavaScript。&lt;/p>
 &lt;p>这里并不谈论如何美化或改造站点，只是记录在此过程中对 Hugo 集成 TypeScript/Javascript，以及页面加载 JavaScript 的一些理解。&lt;/p>
 &lt;h2 id="javascript-构建">JavaScript 构建&lt;/h2>
 &lt;p>&lt;a class="link" href="https://gohugo.io/hugo-pipes/js/" target="_blank" rel="noopener"
