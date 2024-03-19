@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on 平凡的路</title><link>https://ogr.xyz/tags/hugo/</link><description>Recent content in Hugo on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>hzj629206@gmail.com (hzj629206)</managingEditor><webMaster>hzj629206@gmail.com (hzj629206)</webMaster><copyright>ogr.xyz</copyright><lastBuildDate>Tue, 19 Mar 2024 19:59:41 +0800</lastBuildDate><atom:link href="https://ogr.xyz/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>HTML SCRIPT 标签的理解</title><link>https://ogr.xyz/p/html-script/</link><pubDate>Tue, 19 Mar 2024 19:59:41 +0800</pubDate><author>hzj629206@gmail.com (hzj629206)</author><guid>https://ogr.xyz/p/html-script/</guid><description>&lt;h2 id="背景">背景&lt;/h2>
+&lt;p>我的博客是用 &lt;a class="link" href="https://gohugo.io/" target="_blank" rel="noopener"
+>Hugo&lt;/a> 搭建的，主题是 &lt;a class="link" href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener"
+>hugo-theme-stack&lt;/a>。经过一段时间的摸索，对 Hugo 和 &lt;code>hugo-theme-stack&lt;/code> 都有了一定的了解。&lt;br>
+&lt;code>hugo-theme-stack&lt;/code> 简洁大方同时又预留了扩展性，Hugo 构建流水线支持处理 Sass 和 TypeScript/JavaScript。
+说到扩展性，最简单地就是通过自定义 CSS 和 Javascript 来对站点进行美化或改造。&lt;code>hugo-theme-stack&lt;/code> 预留了 &lt;code>assets/scss/custom.scss&lt;/code> 和 &lt;code>assets/ts/custom.ts&lt;/code> 分别用于自定义 CSS 和 TypeScript/JavaScript。&lt;/p>
+&lt;p>这里并不谈论如何美化或改造站点，只是记录在此过程中对 Hugo 集成 TypeScript/Javascript，以及页面加载 JavaScript 的一些理解。&lt;/p>
+&lt;h2 id="javascript-构建">JavaScript 构建&lt;/h2>
+&lt;p>&lt;a class="link" href="https://gohugo.io/hugo-pipes/js/" target="_blank" rel="noopener"
+>官方文档&lt;/a> 基本上包含了所有 TypeScript/JavaScript 处理的内容。&lt;/p>
+&lt;h3 id="基本使用方法">基本使用方法&lt;/h3>
+&lt;p>以 &lt;code>hugo-theme-stack&lt;/code> 主题的代码为例：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go-html-template" data-lang="go-html-template">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">{{-&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$opts&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">:=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">dict&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;minify&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">hugo&lt;/span>&lt;span class="na">.IsProduction&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">-}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">{{-&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$script&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">:=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">resources&lt;/span>&lt;span class="na">.Get&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;ts/main.ts&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">js&lt;/span>&lt;span class="na">.Build&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$opts&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">-}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;text/javascript&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="cp">{{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$script&lt;/span>&lt;span class="na">.RelPermalink&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">}}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在主题的目录下有 &lt;code>assets/ts/main.ts&lt;/code> 文件，主题自身的所有 JavaScript 内容都在这里。&lt;br>
+&lt;code>|&lt;/code> 表示管道，跟 Linux Shell 的管道命令类似，&lt;code>|&lt;/code> 前面的执行结果做为后面处理的输入，支持任意级联。输入和输出都是 &lt;code>resource.Resource&lt;/code>。&lt;br>
+Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_blank" rel="noopener"
+>js.Build&lt;/a> 编译和处理 TypeScript / JavaScript 文件。Hugo 本身没有外部依赖，不需要依赖本地环境安装 &lt;code>tsc&lt;/code>。也正是如此，Hugo 只支持少量的选项。&lt;br>
+如果没有指定 &lt;code>targetPath&lt;/code> 参数，默认使用与输入路径相同的输出路径，比如这个例子会输入到 &lt;code>public/ts/main.js&lt;/code>。这个例子对于生产环境还会压缩生成的 JS 文件。需要注意 &lt;code>target&lt;/code> 选项的默认值是 &lt;code>esnext&lt;/code>，基本上不会对 JS 语法做任何转译了。如果有兼容性考虑的话，Hugo 也支持 &lt;a class="link" href="https://gohugo.io/hugo-pipes/babel/" target="_blank" rel="noopener"
+>Babel&lt;/a>。个人博客没有兼容性考量，使用默认设置即可。&lt;/p>
+&lt;p>最终在HTML页面上是这样的：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;text/javascript&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;/ts/main.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>主题自身的 JS 内容一般不会有变化，这样的结果不会有什么。但是对于自定义 JS 可能就有问题了。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;text/javascript&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;/ts/custom.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在美化或改造站点的过程中，免不了要引入 JS 代码。因为URL始终保持不变，这样在发布的时候就可能会有浏览器缓存问题。解决这个问题的方法就是在 JS 文件名上添加哈希值，这样每次内容变化都会导致 URL 变化，就不会有缓存问题了。同时还能用 &lt;code>integrity&lt;/code> 属性增强安全性。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go-html-template" data-lang="go-html-template">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">{{-&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$script&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">:=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">resources&lt;/span>&lt;span class="na">.Get&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;ts/custom.ts&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">js&lt;/span>&lt;span class="na">.Build&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$opts&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">fingerprint&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">-}}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;text/javascript&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="cp">{{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$script&lt;/span>&lt;span class="na">.RelPermalink&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">}}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span> &lt;span class="na">integrity&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="cp">{{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nx">$script&lt;/span>&lt;span class="na">.Data.Integrity&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="cp">}}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>最终在HTML页面上是这样的：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;text/javascript&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;/ts/custom.f674679881e30bf214f10acf02f08fb4109e73dab259b4654b247ec11e1fd4c1.js&amp;#34;&lt;/span> &lt;span class="na">integrity&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;sha256-9nRnmIHjC/IU8QrPAvCPtBCec9qyWbRlSyR&amp;amp;#43;wR4f1ME=&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="集成-npm">集成 &lt;code>npm&lt;/code>&lt;/h3>
+&lt;p>&lt;code>npm&lt;/code> 已经是最基础和最广泛使用的 JS 包管理器。如果我们的 TypeScript/JavaScript 代码需要引入第三方依赖，可以使用 &lt;code>npm&lt;/code>。&lt;/p>
+&lt;ol>
+&lt;li>首先在站点根目录执行 &lt;code>hugo mod npm pack&lt;/code>，Hugo 会生成 &lt;code>package.hugo.json&lt;/code>。跟使用 &lt;code>package.json&lt;/code> 一样，把需要用到的依赖添加进去。&lt;/li>
+&lt;li>再次执行 &lt;code>hugo mod npm pack&lt;/code>，Hugo 会分析并收集所有 Hugo 模块的 &lt;code>package.hugo.json&lt;/code> 文件，最终生成 &lt;code>package.json&lt;/code> 文件。&lt;/li>
+&lt;li>接着执行 &lt;code>npm install&lt;/code> 或 &lt;code>npm ci&lt;/code> 下载依赖到本地 &lt;code>node_modules&lt;/code> 目录。&lt;/li>
+&lt;li>把 &lt;code>package.hugo.json&lt;/code>，&lt;code>package.json&lt;/code> 和 &lt;code>package-lock.json&lt;/code> 都添加到 Git 库。&lt;/li>
+&lt;li>在 TypeScript/JavaScript 代码里面正常使用 &lt;code>import&lt;/code> 即可。例如：&lt;code>import * as React from 'react'&lt;/code>。&lt;/li>
+&lt;li>用 &lt;code>npm ci &amp;amp;&amp;amp; hugo&lt;/code> 生成站点并发布。&lt;/li>
+&lt;/ol>
+&lt;h2 id="html-script-标签">HTML SCRIPT 标签&lt;/h2>
+&lt;p>上面讲了如何在 Hugo 项目中使用 JS。这里讲一下对 &lt;code>&amp;lt;script&amp;gt;&lt;/code> 标签的理解。&lt;/p>
+&lt;p>&lt;code>&amp;lt;script&amp;gt;&lt;/code> 有个 &lt;code>type&lt;/code> 属性，如果不指定，默认是 &lt;code>type=&amp;quot;text/javascript&amp;quot;&lt;/code>，这也是最常用的设置，没有任何兼容性问题。&lt;/p>
+&lt;h3 id="内联">内联&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// code here
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="p">&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方法一般不使用了，更合理的做法是把 JS 代码归类到合适的 JS 文件里面。&lt;/p>
+&lt;h3 id="外联">外联&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/x.js&amp;#34;&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方法是最常见的用法。不过这里会阻塞页面渲染，即浏览器解析到这个标签时会立即同步下载和执行引用的 JS 文件，再接着解析后续部分。这就会导致一段时间的空白页面。&lt;/p>
+&lt;h3 id="延迟">延迟&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/x.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方法是最推荐的用法。&lt;code>defer&lt;/code> 属性告诉浏览器异步下载引用的 JS 文件，不再阻塞页面解析。页面解析完成且 DOM TREE 就绪时才会执行 JS 文件。如果页面中有多个 &lt;code>defer&lt;/code> 文件，会按照在页面中出现的顺序依次执行。&lt;br>
+（啥？你问如果 &lt;code>defer&lt;/code> 用于内联是什么情况？答：你为什么要那么做？）&lt;/p>
+&lt;h3 id="异步">异步&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://thirdparty.com/y.js&amp;#34;&lt;/span> &lt;span class="na">async&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方法适用于外部 JS 文件，比如监控、统计、追踪用途的 JS。这类 JS 无须操作页面本身的DOM，一般操作 Cookie 以及监听事件。完全异步下载和执行，不会阻塞页面加载过程，不用等待页面加载完成，没有依赖关系，没有顺序要求。&lt;br>
+（啥？你问如果 &lt;code>async&lt;/code> 和 &lt;code>defer&lt;/code> 同时使用是什么情况？答：你为什么要那么做？）&lt;/p>
+&lt;h3 id="内联模块">内联模块&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;module&amp;#34;&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">import&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nx">o&lt;/span> &lt;span class="p">}&lt;/span> &lt;span class="nx">from&lt;/span> &lt;span class="s1">&amp;#39;x.js&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种方法是 ES6/ES2015 引入的模块语法。只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>，旧版浏览器会忽略这个标签内的内容。&lt;br>
+这里不讲 &lt;code>import&lt;/code> 具体用法，一般不这样使用。常见用法是现代 JS 语法编程，并通过打包工具（比如 &lt;code>webpack&lt;/code>）将整个页面的 JS 资源转译打包成一个 JS 文件。&lt;/p>
+&lt;h3 id="外联模块">外联模块&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;module&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/x.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这种用法允许在 &lt;code>x.js&lt;/code> 里面嵌套使用 &lt;code>import&lt;/code> 语法。但整体而言，这个用法没有为当前作用域引入任何符号。如果 &lt;code>x.js&lt;/code> 没有用到 &lt;code>import&lt;/code>，就相当于普通地下载并执行这个 JS 文件，和 &lt;code>type=&amp;quot;text/javascript&amp;quot;&lt;/code> 一样的效果。&lt;/p>
+&lt;p>区别在于：&lt;/p>
+&lt;ul>
+&lt;li>只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>。利用这个特性可以为较新的浏览器和老旧浏览器加载不同的JS文件。
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">type&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;module&amp;#34;&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/x.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">nomodule&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/y.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>较新的浏览器能识别 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code> 和 &lt;code>nomodule&lt;/code>，所以会忽略 &lt;code>y.js&lt;/code>，只会使用 &lt;code>x.js&lt;/code>。&lt;br>
+老旧浏览器不认识 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>，所以会忽略 &lt;code>x.js&lt;/code>，只会使用 &lt;code>y.js&lt;/code> 并忽略 &lt;code>nomodule&lt;/code> 属性。&lt;br>
+例如：&lt;a class="link" href="https://github.com/gohugoio/hugo-mod-jslibs/blob/master/alpinejs/layouts/partials/jslibs/alpinejs/script-src.html" target="_blank" rel="noopener"
+>hugo-mod-jslibs/alpinejs&lt;/a>。&lt;/li>
+&lt;li>如果想要在浏览器引入全局对象，需要在JS模块里面为 &lt;code>window&lt;/code> 对象设置相应的属性。&lt;br>
+例如 &lt;a class="link" href="https://github.com/alpinejs/alpine/tree/main/packages/alpinejs/builds" target="_blank" rel="noopener"
+>Alpinejs&lt;/a> 和各种 Polyfill。&lt;/li>
+&lt;/ul></description></item></channel></rss>
