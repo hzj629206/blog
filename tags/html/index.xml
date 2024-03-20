@@ -156,7 +156,8 @@ Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_bl
 &lt;/div>&lt;p>这种用法允许在 &lt;code>x.js&lt;/code> 里面嵌套使用 &lt;code>import&lt;/code> 语法。但整体而言，这个用法没有为当前作用域引入任何符号。如果 &lt;code>x.js&lt;/code> 没有用到 &lt;code>import&lt;/code>，就相当于普通地下载并执行这个 JS 文件，和 &lt;code>type=&amp;quot;text/javascript&amp;quot;&lt;/code> 一样的效果。&lt;/p>
 &lt;p>区别在于：&lt;/p>
 &lt;ul>
-&lt;li>只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>。利用这个特性可以为较新的浏览器和老旧浏览器加载不同的 JS 文件。
+&lt;li>
+&lt;p>只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>。利用这个特性可以为较新的浏览器和老旧浏览器加载不同的 JS 文件。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -167,13 +168,16 @@ Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_bl
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">nomodule&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/y.js&amp;#34;&lt;/span> &lt;span class="na">defer&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>较新的浏览器能识别 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code> 和 &lt;code>nomodule&lt;/code>，所以会忽略 &lt;code>y.js&lt;/code>，只会使用 &lt;code>x.js&lt;/code>。&lt;br>
+&lt;/div>&lt;p>较新的浏览器能识别 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code> 和 &lt;code>nomodule&lt;/code>，所以会忽略 &lt;code>y.js&lt;/code>，只会使用 &lt;code>x.js&lt;/code>。&lt;br>
 老旧浏览器不认识 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>，所以会忽略 &lt;code>x.js&lt;/code>，只会使用 &lt;code>y.js&lt;/code> 并忽略 &lt;code>nomodule&lt;/code> 属性。&lt;br>
 例如：&lt;a class="link" href="https://github.com/gohugoio/hugo-mod-jslibs/blob/master/alpinejs/layouts/partials/jslibs/alpinejs/script-src.html" target="_blank" rel="noopener"
->hugo-mod-jslibs/alpinejs&lt;/a>。&lt;/li>
-&lt;li>如果想要在浏览器引入全局对象，需要在JS模块里面为 &lt;code>window&lt;/code> 对象设置相应的属性。&lt;br>
+>hugo-mod-jslibs/alpinejs&lt;/a>。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果想要在浏览器引入全局对象，需要在JS模块里面为 &lt;code>window&lt;/code> 对象设置相应的属性。&lt;br>
 例如 &lt;a class="link" href="https://github.com/alpinejs/alpine/tree/main/packages/alpinejs/builds" target="_blank" rel="noopener"
->Alpinejs&lt;/a> 和各种 Polyfill。&lt;/li>
+>Alpinejs&lt;/a> 和各种 Polyfill。&lt;/p>
+&lt;/li>
 &lt;/ul></description></item><item><title>Markdown Syntax Guide</title><link>https://ogr.xyz/p/markdown-syntax-guide/</link><pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate><author>hzj629206@gmail.com (hzj629206)</author><guid>https://ogr.xyz/p/markdown-syntax-guide/</guid><description>&lt;img src="https://ogr.xyz/p/markdown-syntax-guide/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" />&lt;p>This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p>
 &lt;h2 id="headings">Headings&lt;/h2>
 &lt;p>The following HTML &lt;code>&amp;lt;h1&amp;gt;&lt;/code>—&lt;code>&amp;lt;h6&amp;gt;&lt;/code> elements represent six levels of section headings. &lt;code>&amp;lt;h1&amp;gt;&lt;/code> is the highest section level while &lt;code>&amp;lt;h6&amp;gt;&lt;/code> is the lowest.&lt;/p>
