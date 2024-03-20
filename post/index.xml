@@ -78,7 +78,7 @@ Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_bl
 &lt;li>接着执行 &lt;code>npm install&lt;/code> 或 &lt;code>npm ci&lt;/code> 下载依赖到本地 &lt;code>node_modules&lt;/code> 目录。&lt;/li>
 &lt;li>把 &lt;code>package.hugo.json&lt;/code>，&lt;code>package.json&lt;/code> 和 &lt;code>package-lock.json&lt;/code> 都添加到 Git 库。&lt;/li>
 &lt;li>在 TypeScript/JavaScript 代码里面正常使用 &lt;code>import&lt;/code> 即可。例如：&lt;code>import * as React from 'react'&lt;/code>。&lt;/li>
-&lt;li>用 &lt;code>npm ci &amp;amp;&amp;amp; hugo&lt;/code> 生成站点并发布。&lt;/li>
+&lt;li>用 &lt;code>npm ci &amp;amp;&amp;amp; hugo&lt;/code> 生成站点并发布。注意构建环境比如 Github Action 需要安装 Node.js。&lt;/li>
 &lt;/ol>
 &lt;h2 id="html-script-标签">HTML SCRIPT 标签&lt;/h2>
 &lt;p>上面讲了如何在 Hugo 项目中使用 JS。这里讲一下对 &lt;code>&amp;lt;script&amp;gt;&lt;/code> 标签的理解。&lt;/p>
@@ -106,7 +106,7 @@ Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_bl
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-html" data-lang="html">&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nt">script&lt;/span> &lt;span class="na">src&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s">&amp;#34;https://mydomain.com/x.js&amp;#34;&lt;/span>&lt;span class="p">&amp;gt;&amp;lt;/&lt;/span>&lt;span class="nt">script&lt;/span>&lt;span class="p">&amp;gt;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;p>这种方法是最常见的用法。不过这里会阻塞页面渲染，即浏览器解析到这个标签时会立即同步下载和执行引用的 JS 文件，再接着解析后续部分。这就会导致一段时间的空白页面。&lt;/p>
+&lt;/div>&lt;p>这种方法是最常见的用法。不过这里会阻塞页面渲染，即浏览器解析到这个标签时会立即同步下载和执行引用的 JS 文件，再接着解析后续部分。这就会导致一段时间的空白页面。一般是放到 &lt;code>&amp;lt;body&amp;gt;&lt;/code> 的尾部，这样可以减少等待。&lt;/p>
 &lt;h3 id="延迟">延迟&lt;/h3>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -156,7 +156,7 @@ Hugo 使用 &lt;a class="link" href="https://esbuild.github.io/api/" target="_bl
 &lt;/div>&lt;p>这种用法允许在 &lt;code>x.js&lt;/code> 里面嵌套使用 &lt;code>import&lt;/code> 语法。但整体而言，这个用法没有为当前作用域引入任何符号。如果 &lt;code>x.js&lt;/code> 没有用到 &lt;code>import&lt;/code>，就相当于普通地下载并执行这个 JS 文件，和 &lt;code>type=&amp;quot;text/javascript&amp;quot;&lt;/code> 一样的效果。&lt;/p>
 &lt;p>区别在于：&lt;/p>
 &lt;ul>
-&lt;li>只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>。利用这个特性可以为较新的浏览器和老旧浏览器加载不同的JS文件。
+&lt;li>只有较新的浏览器才支持 &lt;code>type=&amp;quot;module&amp;quot;&lt;/code>。利用这个特性可以为较新的浏览器和老旧浏览器加载不同的 JS 文件。
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
