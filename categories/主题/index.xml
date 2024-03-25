@@ -272,11 +272,12 @@ src="https://gitlab.com/-/snippets/2349278.js"
 &lt;p>The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a &lt;code>footer&lt;/code> or &lt;code>cite&lt;/code> element, and optionally with in-line changes such as annotations and abbreviations.&lt;/p>
 &lt;h4 id="blockquote-without-attribution">Blockquote without attribution&lt;/h4>
 &lt;blockquote>
-&lt;p>Tiam, ad mint andaepu dandae nostion secatur sequo quae.&lt;strong>Note&lt;/strong> that you can use &lt;em>Markdown syntax&lt;/em> within a blockquote.&lt;/p>
+&lt;p>Tiam, ad mint andaepu dandae nostion secatur sequo quae.&lt;br>
+&lt;strong>Note&lt;/strong> that you can use &lt;em>Markdown syntax&lt;/em> within a blockquote.&lt;/p>
 &lt;/blockquote>
 &lt;h4 id="blockquote-with-attribution">Blockquote with attribution&lt;/h4>
 &lt;blockquote>
-&lt;p>Don&amp;rsquo;t communicate by sharing memory, share memory by communicating.&lt;br>
+&lt;p>Don&amp;rsquo;t communicate by sharing memory, share memory by communicating.&lt;br>&lt;br>
 — &lt;cite>Rob Pike&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;/cite>&lt;/p>
 &lt;/blockquote>
 &lt;h2 id="tables">Tables&lt;/h2>
@@ -585,9 +586,9 @@ margin: 25px 0;
 &lt;script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous" onload="renderMathInElement(document.body);">&lt;/script>
 &lt;h3 id="examples">Examples&lt;/h3>
 &lt;p>Inline math: $\varphi = \dfrac{1+\sqrt5}{2}= 1.6180339887…$&lt;/p>
-&lt;p>Block math:
-$$
-\varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }
+&lt;p>Block math:&lt;br>
+$$&lt;br>
+\varphi = 1+\frac{1} {1+\frac{1} {1+\frac{1} {1+\cdots} } }&lt;br>
 $$&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>

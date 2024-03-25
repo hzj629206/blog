@@ -6,11 +6,13 @@
 （没有测试过是否支持 S3 兼容的访问策略，如果兼容的话，也可以用访问策略实现允许匿名以只读的形式访问。）&lt;/p>
 &lt;h2 id="创建存储桶">创建存储桶&lt;/h2>
 &lt;p>进入&lt;a class="link" href="https://cloud.oracle.com/object-storage/buckets" target="_blank" rel="noopener"
->存储桶&lt;/a>管理页面。对于免费套餐用户，可以看到提示有 20GB 的免费存储空间额度。&lt;img src="https://oos.ogr.xyz/e174a208096cb3c1b09fa57a9f67fd6b84318641af539e6cc9469fee52f5a9d0.png"
+>存储桶&lt;/a>管理页面。对于免费套餐用户，可以看到提示有 20GB 的免费存储空间额度。&lt;br>
+&lt;img src="https://oos.ogr.xyz/e174a208096cb3c1b09fa57a9f67fd6b84318641af539e6cc9469fee52f5a9d0.png"
 loading="lazy"
 alt="picture 0"
 >&lt;/p>
-&lt;p>点击&lt;strong>创建存储桶&lt;/strong>按钮，输入&lt;strong>存储桶名称&lt;/strong>，其它选项用默认即可。我这里的名称为 &lt;code>bucket-oracle-free-20G&lt;/code>。&lt;img src="https://oos.ogr.xyz/d00c32aa10da678181f3b927692908b81af9aca3ad83bedd10a5cdcd982e13b8.png"
+&lt;p>点击&lt;strong>创建存储桶&lt;/strong>按钮，输入&lt;strong>存储桶名称&lt;/strong>，其它选项用默认即可。我这里的名称为 &lt;code>bucket-oracle-free-20G&lt;/code>。&lt;br>
+&lt;img src="https://oos.ogr.xyz/d00c32aa10da678181f3b927692908b81af9aca3ad83bedd10a5cdcd982e13b8.png"
 loading="lazy"
 alt="picture 1"
 >&lt;/p>
@@ -35,7 +37,8 @@ alt="picture 1"
 &lt;p>上面已经能用 &lt;code>Key ID&lt;/code> 和 &lt;code>Secret key&lt;/code> 访问存储桶对象了。对通过 Web 应用访问存储桶的场景有更简单的方法，那就是创建&lt;strong>预先验证的请求&lt;/strong>。预先验证的请求允许访问存储桶对象而不需要提供访问密钥，本质上就是预先生成访问授权码。在使用 Cloudflare Workers 实现 CDN 时会比较方便。&lt;/p>
 &lt;p>进入存储桶详情页面，从左边的侧边栏进入&lt;strong>预先验证的请求&lt;/strong>。&lt;br>
 &lt;img src="https://oos.ogr.xyz/9b12daf3c96c5a542d642e689e3cceb6e1fcb02ac5419f0a38245a607315b47c.png" loading="lazy" width="50%" />&lt;/p>
-&lt;p>点击创建预先验证的请求。因为是用于 Cloudflare Workers，我这里起名为 &lt;code>Cloudflare-Workers&lt;/code>。目标选择&lt;strong>存储桶&lt;/strong>，类型选择&lt;strong>允许对象读取&lt;/strong>，到期时间可以指定一个非常久远的时间以近似实现永不过期。&lt;img src="https://oos.ogr.xyz/47130c42b6172097fb100f7c18d88438414f08bd301de34c3ea1f29212893f0d.png"
+&lt;p>点击创建预先验证的请求。因为是用于 Cloudflare Workers，我这里起名为 &lt;code>Cloudflare-Workers&lt;/code>。目标选择&lt;strong>存储桶&lt;/strong>，类型选择&lt;strong>允许对象读取&lt;/strong>，到期时间可以指定一个非常久远的时间以近似实现永不过期。&lt;br>
+&lt;img src="https://oos.ogr.xyz/47130c42b6172097fb100f7c18d88438414f08bd301de34c3ea1f29212893f0d.png"
 loading="lazy"
 alt="picture 6"
 >&lt;br>
@@ -43,7 +46,7 @@ alt="picture 6"
 &lt;h2 id="cloudflare-workers">Cloudflare Workers&lt;/h2>
 &lt;p>Cloudflare 为普通用户提供免费 CDN 服务，非常良心。&lt;br>
 基本上要使用 Cloudflare 服务，需要在 Cloudflare 托管域名。如何购买和托管域名参见网上其它文章。本博客所使用的域名 &lt;code>ogr.xyz&lt;/code> 就托管于 Cloudflare。&lt;/p>
-&lt;p>常规的 CDN 模式是：&lt;code>用户 -&amp;gt; Cloudflare 服务器 -&amp;gt; Source 服务器&lt;/code>。这种方式只需要在 Cloudflare 托管域名，使用 CNAME 并开启代理（点亮小云朵）即可。
+&lt;p>常规的 CDN 模式是：&lt;code>用户 -&amp;gt; Cloudflare 服务器 -&amp;gt; Source 服务器&lt;/code>。这种方式只需要在 Cloudflare 托管域名，使用 CNAME 并开启代理（点亮小云朵）即可。&lt;br>
 然而对于 Oracle 对象存储，无论可见性是公共还是专用，都无法实现代理。这是因为 Oracle 对象存储的域名里面包含存储桶的 &lt;code>bucket&lt;/code> 和 &lt;code>region&lt;/code> 信息，Cloudflare 访问源服务器时并不会使用源服务器域名，而是使用 Cloudflare 托管的域名，这样一来 Oracle 服务器就不能正常处理请求了。（企业版订阅用户可以通过规则重写 &lt;code>Host&lt;/code> HTTP Header。Cloudflare 解释说普通用户不允许是出于安全考虑。）&lt;br>
 那就只能使用 Cloudflare Workers + Cache 实现 CDN 效果了。&lt;/p>
 &lt;h3 id="添加二级域名">添加二级域名&lt;/h3>
@@ -235,10 +238,6 @@ alt="picture 6"
 &lt;/span>&lt;span class="lnt">177
 &lt;/span>&lt;span class="lnt">178
 &lt;/span>&lt;span class="lnt">179
-&lt;/span>&lt;span class="lnt">180
-&lt;/span>&lt;span class="lnt">181
-&lt;/span>&lt;span class="lnt">182
-&lt;/span>&lt;span class="lnt">183
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-javascript" data-lang="javascript">&lt;span class="line">&lt;span class="cl">&lt;span class="kr">const&lt;/span> &lt;span class="nx">FileMimeType&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
@@ -402,10 +401,6 @@ alt="picture 6"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">newRequest&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">headers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">set&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;X-Forwarded-Host&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">host&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kr">const&lt;/span> &lt;span class="nx">response&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kr">await&lt;/span> &lt;span class="nx">fetch&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">newRequest&lt;/span>&lt;span class="p">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">response&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">status&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="mi">200&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">response&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">let&lt;/span> &lt;span class="nx">contentType&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nx">response&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">headers&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">get&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Content-Type&amp;#39;&lt;/span>&lt;span class="p">);&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">contentType&lt;/span> &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> &lt;span class="nx">contentType&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="s1">&amp;#39;application/octet-stream&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">response&lt;/span>
@@ -427,7 +422,7 @@ alt="picture 6"
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;h3 id="将二级域名指向-worker">将二级域名指向 Worker&lt;/h3>
-&lt;p>进入到创建的 Worker 管理页面，Settings -&amp;gt; Add route。
+&lt;p>进入到创建的 Worker 管理页面，Settings -&amp;gt; Add route。&lt;br>
 &lt;img src="https://oos.ogr.xyz/7a97b2030fda600be4d16074a3c043e90c280a3cf77329fc4565e72c56cfd810.png"
 loading="lazy"
 alt="picture 7"
