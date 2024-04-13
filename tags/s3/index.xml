@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>S3 on 平凡的路</title><link>https://ogr.xyz/tags/s3/</link><description>Recent content in S3 on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>hzj629206@gmail.com (hzj629206)</managingEditor><webMaster>hzj629206@gmail.com (hzj629206)</webMaster><copyright>ogr.xyz</copyright><lastBuildDate>Sat, 13 Apr 2024 09:12:12 +0800</lastBuildDate><atom:link href="https://ogr.xyz/tags/s3/index.xml" rel="self" type="application/rss+xml"/><item><title>JavaScript CORS 跨域请求</title><link>https://ogr.xyz/p/js-cors/</link><pubDate>Sat, 13 Apr 2024 09:12:12 +0800</pubDate><author>hzj629206@gmail.com (hzj629206)</author><guid>https://ogr.xyz/p/js-cors/</guid><description>&lt;p>最近对思源笔记和 Obsidian 进行了一些了解，二者都是很好的离线个人知识库软件，并且二者都支持插件系统。在研究图床插件的过程中涉及到了 CORS 问题。&lt;/p>
+&lt;p>思源笔记和 Obsidian 都是基于 Electron 框架构建的软件，可以认为其中内置了 Chrominum 浏览器和 Node.js 环境。&lt;/p>
+&lt;ol>
+&lt;li>Node.js 是服务器端，不存在 CORS 问题。&lt;/li>
+&lt;li>浏览器环境存在 CORS 问题。&lt;/li>
+&lt;/ol>
+&lt;p>同样是 JavaScript 编程语言，&lt;strong>Node.js&lt;/strong> 环境下进行 HTTP 请求和&lt;strong>浏览器&lt;/strong>环境下进行 HTTP 请求是不一样的。&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>Node.js&lt;/strong> 环境下有内置的 &lt;code>http&lt;/code> 和 &lt;code>https&lt;/code> 包。&lt;/li>
+&lt;li>&lt;strong>浏览器&lt;/strong>环境下有 &lt;code>XMLHttpRequest&lt;/code> API 和 &lt;code>Fetch&lt;/code> API。&lt;/li>
+&lt;/ol>
+&lt;p>当然上述只是最底层的API，在应用层面有各种第三方库进行封装，提供更加易用的接口。在浏览器端，传统的典型是 jQuery，新锐的典型是 Axios。&lt;/p>
+&lt;h2 id="cors-基础">CORS 基础&lt;/h2>
+&lt;p>说到 CORS 前，需要了解“同源”概念。&lt;strong>同源&lt;/strong>即&lt;strong>协议&lt;/strong>、&lt;strong>域名&lt;/strong>和&lt;strong>端口&lt;/strong>三者完全相同。浏览器使用同源政策，目的是为了保证用户信息的安全，防止恶意的网站窃取数据，不同源的访问会受到限制（主要是 Cookie / Local Storage 访问、iframe DOM 访问、发起 HTTP 请求）。&lt;/p>
+&lt;p>对于 HTML 标签的外部链接如 &lt;code>&amp;lt;img&amp;gt;&lt;/code>、&lt;code>&amp;lt;audio&amp;gt;&lt;/code>、&lt;code>&amp;lt;video&amp;gt;&lt;/code>、&lt;code>&amp;lt;script&amp;gt;&lt;/code>，没有跨域问题。不过对于这样的外部链接请求不会带上 Cookie。&lt;br>
+对于 JavaScript 发起 HTTP 请求，三要素有任何之一不匹配即是跨域，浏览器即会出于安全考虑进行限制，这时就需要使用 CORS （Cross-origin resource sharing）。CORS 主要由服务器端实现，对用户透明。&lt;br>
+浏览器将 CORS 请求分成两类：简单请求（simple request）和非简单请求（not-so-simple request）。&lt;/p>
+&lt;h3 id="简单请求">简单请求&lt;/h3>
+&lt;p>简单请求是指满足以下条件的（一般只考虑前面两个条件即可）：&lt;/p>
+&lt;ol>
+&lt;li>使用 GET、POST、HEAD 其中一种请求方法。&lt;/li>
+&lt;li>HTTP的头信息不超出以下几种字段：
+&lt;ul>
+&lt;li>Accept&lt;/li>
+&lt;li>Accept-Language&lt;/li>
+&lt;li>Content-Language&lt;/li>
+&lt;li>Last-Event-ID&lt;/li>
+&lt;li>Content-Type：只限于三个值 &lt;code>application/x-www-form-urlencoded&lt;/code>、&lt;code>multipart/form-data&lt;/code>、&lt;code>text/plain&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>请求中的任意 XMLHttpRequestUpload 对象均没有注册任何事件监听器；&lt;/li>
+&lt;li>XMLHttpRequestUpload 对象可以使用 XMLHttpRequest.upload 属性访问。请求中没有使用 ReadableStream 对象。&lt;/li>
+&lt;/ol>
+&lt;p>这是为了兼容表单（form），因为历史上表单一直可以发出跨域请求。AJAX 的跨域设计就是，只要表单可以发，AJAX 就可以直接发。&lt;/p>
+&lt;p>对于简单请求，浏览器直接发起 CORS 请求，具体来说就是服务器端会根据请求头信息中的 Origin 字段（包括了协议 + 域名 + 端口），来决定是否同意这次请求。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">GET /the-target-endpoint HTTP/1.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Origin: http://www.bob.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Host: api.alice.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Accept-Language: en-US
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Connection: keep-alive
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User-Agent: Mozilla/5.0...
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如果 Origin 指定的源在许可范围内，服务器返回的响应，会多出几个头信息字段：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Access-Control-Allow-Origin: http://www.bob.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Access-Control-Allow-Credentials: true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Access-Control-Expose-Headers: X-Custom-Header
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>全部字段参考 &lt;a class="link" href="https://developer.mozilla.org/en-US/docs/Glossary/CORS" target="_blank" rel="noopener"
+>CORS&lt;/a>。&lt;/p>
+&lt;p>如果服务器没有返回相应的头部信息或 Origin 指定的源不在许可范围内，浏览器通过 &lt;code>onerror&lt;/code> 抛出错误。此时不能通过 HTTP 状态码来识别请求是否成功。&lt;/p>
+&lt;h3 id="非简单请求">非简单请求&lt;/h3>
+&lt;p>非简单请求时指那些对服务器有特殊要求的请求，其实简单请求之外的都是非简单请求了。比如请求方法是 PUT 或 DELETE、Content-Type 的类型是 &lt;code>application/json&lt;/code>。&lt;br>
+非简单请求的 CORS 请求，会在正式通信之前，使用 OPTIONS 方法发起一个预检（preflight）请求到服务器，浏览器先询问服务器，当前网页所在的域名是否在服务器的许可名单之中，以及可以使用哪些 HTTP 动词和头信息字段。只有得到肯定答复，浏览器才会发出正式的 XMLHttpRequest / Fetch 请求，否则就报错。&lt;/p>
+&lt;p>下面是一个预检请求的头部：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">OPTIONS /the-target-endpoint HTTP/1.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Origin: http://www.bob.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Access-Control-Request-Method: PUT
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Access-Control-Request-Headers: X-Custom-Header
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Host: api.alice.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Accept-Language: en-US
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Connection: keep-alive
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User-Agent: Mozilla/5.0...
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>一旦服务器通过了“预检”请求，以后每次浏览器正常的 CORS 请求，就都跟简单请求一样了。&lt;/p>
+&lt;h3 id="cookie">Cookie&lt;/h3>
+&lt;p>CORS 请求一般默认不发送 Cookie，如果服务器端允许 Cookie (即 &lt;code>Access-Control-Allow-Credentials: true&lt;/code>) 则可以通过设置 &lt;code>withCredentials=true&lt;/code> 来要求浏览器发送 Cookie。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="k">const&lt;/span> &lt;span class="n">xhr&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">new&lt;/span> &lt;span class="n">XMLHttpRequest&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">xhr&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">withCredentials&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="bp">true&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">xhr&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">send&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">//&lt;/span> &lt;span class="n">OR&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">fetch&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">credentials&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s1">&amp;#39;include&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">})&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">then&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">...&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>注意：服务器端如果要想允许 Cookie，&lt;code>Access-Control-Allow-Origin&lt;/code> 就不能是 &lt;code>*&lt;/code>，必须指定明确的、与请求网页一致的域名。否则即使指定了 &lt;code>withCredentials=true&lt;/code> ，浏览器也不会发送 Cookie。&lt;/p>
+&lt;h2 id="思源笔记插件处理-cors">思源笔记插件处理 CORS&lt;/h2>
+&lt;p>思源笔记的插件如果有外部资源请求，需要考虑 CORS。桌面版本没有 CORS 问题，移动端或浏览器版有 CORS 问题。&lt;br>
+如果外部资源允许当前 Origin (比如 &lt;code>http://127.0.0.1:6806&lt;/code>)，那不需要特殊处理，正常使用 Fetch API 或 XMLHttpRequest API 即可。&lt;br>
+如果外部资源不允许当前 Origin，那么需要使用一个代理来中转请求。代理本身是服务端环境，访问目标资源时没有跨域问题，代理本身则允许当前 Origin。&lt;br>
+思源内部实现了一个 Proxy：&lt;code>/api/network/forwardProxy&lt;/code>。详情参考&lt;a class="link" href="https://docs.siyuan-note.club/zh-Hans/reference/community/siyuan-sdk/kernel/api/network.html#forwardproxy" target="_blank" rel="noopener"
+>文档&lt;/a>。&lt;/p>
+&lt;p>思源图床插件 PicGo (&lt;a class="link" href="https://github.com/terwer/siyuan-plugin-picgo" target="_blank" rel="noopener"
+>siyuan-plugin-picgo&lt;/a>)，就支持通过内置的代理处理 CORS 以支持特定的图床服务。&lt;/p>
+&lt;h2 id="obsidian-插件处理-cors">Obsidian 插件处理 CORS&lt;/h2>
+&lt;p>Obsidian 插件和思源插件面临同样的情况。Obsidian 提供了 &lt;code>requestUrl&lt;/code> 供插件来处理 CORS。&lt;/p>
+&lt;p>Obsidian 插件 S3 Image Uploader (&lt;a class="link" href="https://github.com/jvsteiner/s3-image-uploader/" target="_blank" rel="noopener"
+>s3-image-uploader&lt;/a>) 和 Imgur (&lt;a class="link" href="https://github.com/gavvvr/obsidian-imgur-plugin" target="_blank" rel="noopener"
+>obsidian-imgur-plugin&lt;/a>)，就是通过内置的 &lt;code>requestUrl&lt;/code> 处理 CORS。&lt;/p>
+&lt;h2 id="s3-服务处理-cors">S3 服务处理 CORS&lt;/h2>
+&lt;p>Amazon S3 和 有些 S3 兼容服务是允许在浏览器中直接访问存储桶的，所以支持在存储桶层面设置 CORS 策略。具体可以参考不同服务的官方文档。&lt;/p>
+&lt;p>这里以 Cloudflare R2 举例：&lt;/p>
+&lt;ol>
+&lt;li>进入 Cloudflare 的 Bucket 页面。&lt;/li>
+&lt;li>进入 &lt;strong>Settings&lt;/strong> 页面并找到 &lt;strong>CORS Policy&lt;/strong>。&lt;/li>
+&lt;li>点击 &amp;ldquo;&lt;strong>Edit CORS policy&lt;/strong>&amp;rdquo; 进行编辑。以下是允许所有 Origin 访问的例子。
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">[
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;AllowedOrigins&amp;#34;: [&amp;#34;*&amp;#34;],
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;AllowedMethods&amp;#34;: [&amp;#34;GET&amp;#34;, &amp;#34;PUT&amp;#34;, &amp;#34;POST&amp;#34;, &amp;#34;HEAD&amp;#34;, &amp;#34;DELETE&amp;#34;],
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &amp;#34;AllowedHeaders&amp;#34;: [&amp;#34;*&amp;#34;]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">]
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/li>
+&lt;li>保存后可以通过 curl 命令进行测试。
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">curl -H “Origin: http://127.0.0.1:6806” \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-H “Access-Control-Request-Method: PUT” \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-H “Access-Control-Request-Headers: X-Requested-With” \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">-X OPTIONS --verbose \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">https://&amp;lt;prefix&amp;gt;.r2.cloudflarestorage.com/&amp;lt;bucket&amp;gt;/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>没有报错且响应头部包含有 CORS 字段即表示生效。&lt;/li>
+&lt;/ol></description></item></channel></rss>
