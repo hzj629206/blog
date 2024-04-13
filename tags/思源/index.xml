@@ -134,11 +134,12 @@
 >obsidian-imgur-plugin&lt;/a>)，就是通过内置的 &lt;code>requestUrl&lt;/code> 处理 CORS。&lt;/p>
 &lt;h2 id="s3-服务处理-cors">S3 服务处理 CORS&lt;/h2>
 &lt;p>Amazon S3 和 有些 S3 兼容服务是允许在浏览器中直接访问存储桶的，所以支持在存储桶层面设置 CORS 策略。具体可以参考不同服务的官方文档。&lt;/p>
-&lt;p>这里以 Cloudflare R2 举例：&lt;/p>
+&lt;p>这里以 Cloudflare R2 为例：&lt;/p>
 &lt;ol>
-&lt;li>进入 Cloudflare 的 Bucket 页面。&lt;/li>
-&lt;li>进入 &lt;strong>Settings&lt;/strong> 页面并找到 &lt;strong>CORS Policy&lt;/strong>。&lt;/li>
-&lt;li>点击 &amp;ldquo;&lt;strong>Edit CORS policy&lt;/strong>&amp;rdquo; 进行编辑。以下是允许所有 Origin 访问的例子。
+&lt;li>进入 Cloudflare R2 相应的 Bucket 页面。&lt;/li>
+&lt;li>进入 &lt;strong>Settings&lt;/strong> 标签页并找到 &lt;strong>CORS Policy&lt;/strong>。&lt;/li>
+&lt;li>点击 &amp;ldquo;&lt;strong>Edit CORS policy&lt;/strong>&amp;rdquo; 进行编辑。以下是允许所有 Origin 访问的例子。更多详情参考官方&lt;a class="link" href="https://developers.cloudflare.com/r2/buckets/cors/" target="_blank" rel="noopener"
+>文档&lt;/a>。
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
