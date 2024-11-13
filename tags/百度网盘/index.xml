@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>百度网盘 on 平凡的路</title><link>https://ogr.xyz/tags/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98/</link><description>Recent content in 百度网盘 on 平凡的路</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><managingEditor>hzj629206@gmail.com (hzj629206)</managingEditor><webMaster>hzj629206@gmail.com (hzj629206)</webMaster><copyright>ogr.xyz</copyright><lastBuildDate>Wed, 13 Nov 2024 16:33:34 +0800</lastBuildDate><atom:link href="https://ogr.xyz/tags/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98/index.xml" rel="self" type="application/rss+xml"/><item><title>百度网盘新加坡加速CDN</title><link>https://ogr.xyz/p/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E6%96%B0%E5%8A%A0%E5%9D%A1%E5%8A%A0%E9%80%9Fcdn/</link><pubDate>Wed, 13 Nov 2024 16:33:34 +0800</pubDate><author>hzj629206@gmail.com (hzj629206)</author><guid>https://ogr.xyz/p/%E7%99%BE%E5%BA%A6%E7%BD%91%E7%9B%98%E6%96%B0%E5%8A%A0%E5%9D%A1%E5%8A%A0%E9%80%9Fcdn/</guid><description>&lt;p>默认情况下，百度网盘的网页端和桌面客户端在新加坡访问都比较慢。经过一番探索，找到了可用的 CDN 服务器。&lt;/p>
+&lt;p>使用方法是修改 hosts 文件，这里用 MacOS 举例是修改 &lt;code>/etc/hosts&lt;/code> 文件。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"># 查看百度香港的IP段：https://whois.ipip.net/AS55967
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"># *.baidupcs.com 可以使用 45.113.192.84
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">45.113.192.84 bjbgp01.baidupcs.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"># *.pcs.baidu.com 可以使用 45.113.192.98
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">45.113.192.98 d.pcs.baidu.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"># pan.baidu.com 使用 45.113.192.97
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">45.113.192.97 pan.baidu.com
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>实测客户端单个文件下载速度可以达到10M以上，5个下载任务总的下载速度最大可以达到60M。&lt;/p>
+&lt;p>注：修改 hosts 的方法不适用于 Alist 挂载百度网盘。Alist 挂载百度网盘可以结合 Rclone 进行多线程下载加速&lt;/p>
+&lt;ol>
+&lt;li>Alist 添加百度网盘&lt;/li>
+&lt;li>Rclone 添加 Alist 为 WebDAV&lt;/li>
+&lt;li>Rclone 使用参数 &lt;code>--multi-thread-streams=16&lt;/code>&lt;/li>
+&lt;/ol></description></item></channel></rss>
